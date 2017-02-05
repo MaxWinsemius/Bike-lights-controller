@@ -13,9 +13,10 @@ CRGB leds[NUM_LEDS];
 #define FPS					120
 uint8_t brightness = 		30;
 
-uint8_t timer20b8 = 	0;
-uint8_t timer100b8 = 	0;
-uint8_t timer300b8 = 	0;
+uint8_t timer20b8 = 	random8();
+uint8_t timer100b8 = 	random8();
+uint8_t timer300b8 = 	random8();
+uint8_t timer1000b8 = 	random8();
 
 //Mode and Setting declarations
 #include "mode.h"
@@ -109,6 +110,7 @@ void loop()
 	EVERY_N_MILLISECONDS(20) { timer20b8++; }
 	EVERY_N_MILLISECONDS(100) { timer100b8++; }
 	EVERY_N_MILLISECONDS(300) { timer300b8++; }
+	EVERY_N_SECONDS(1) { timer1000b8++; }
 
 	//repeating functions
 	EVERY_N_MILLISECONDS(75) { readButtons(); }
