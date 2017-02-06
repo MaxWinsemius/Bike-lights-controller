@@ -64,13 +64,14 @@ void readButtons()
 						break;
 					case 2: //switch mode
 						if(buttonCounter[i] == 1) {
+							//loop around after last mode
 							cMode = (i == 0 ? (cMode - 1) : (cMode + 1)) % amtModes;
 							modes[cMode]->start();
 						}
 						break;
 					case 3: //adjust brightness
 						brightness = VarHandler::capUint8(brightness, i == 0 ? -1 : 1);
-						FastLED.setBrightness(brightness);
+						FastLED.setBrightness(brightness); //set brightness
 						break;
 					default:
 						break;
@@ -85,7 +86,7 @@ void readButtons()
 /*############################## Arduino functions ##############################*/
 void setup() 
 {
-	delay(3000); // some time for the led hardware to initialize
+	delay(1000); // some time for the led hardware to initialize
 	Serial.begin(9600);
 
 	//intitialize buttonpins

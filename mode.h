@@ -1,7 +1,7 @@
 class Mode {
 protected:
 	CRGB *leds;
-	uint8_t sideBars[4][2] = {{0, 19}, {40, 59}, {60, 77}, {95, 112}}; //front left, front right, back left, back right
+	uint8_t sideBars[4][2] = {{0, 19}, {40, 60}, {60, 77}, {95, 112}}; //front left, front right, back left, back right
 
 	uint8_t calcSine(uint16_t counter, uint16_t top, uint16_t bottom, uint16_t sineOffset)
 	{
@@ -21,8 +21,8 @@ public:
 	Mode(CRGB *l) { leds = l; }
 
 	virtual void render() {};
-	virtual void start() {};
-	virtual void left(uint8_t c, uint8_t s) {};
+	virtual void start() {}; //run stuff when this mode is switched to
+	virtual void left(uint8_t c, uint8_t s) {}; //run this when the left/right button is being pushed
 	virtual void right(uint8_t c, uint8_t s) {};
 
 
