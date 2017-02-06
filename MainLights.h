@@ -17,26 +17,6 @@ private:
 	int indSideParse[4] = {0, 1, 1, 0};
 	bool indSideParseB[4] = {false, true, true, false};
 
-
-	//indicator methods
-	bool blinkExtensive(uint8_t bar[2], uint8_t runner, bool direction)
-	{
-		//calculate current led position based on direction
-		uint8_t currentLed = direction ? bar[0] + runner : bar[1] - 1 - runner;
-
-		//set led color
-		leds[currentLed] = CRGB::DarkOrange;
-
-		//check if the led has exceeded the last led to blink (to prevent it trying to color too many leds)
-		return direction ? 
-			VarHandler::checkHigherThan(bar[0], runner, bar[1] - 1) : 
-			VarHandler::checkLowerThan(bar[1], runner, bar[0] + 2);
-	}
-
-	void blinkSimple(uint8_t startLed, uint8_t width) {
-		for (uint8_t i = startLed; i < startLed+width; ++i) leds[i] = CRGB::DarkOrange;
-	}
-
 public:
 	//construct
 	MainLights (CRGB *l) : Mode(l) {}
@@ -83,7 +63,7 @@ public:
 					} else if(indSwitch && extensiveness == 0) {
 						//Simple
 						uint8_t startLed = i%2 == 0 ? sideBars[i][1] - indicatorSimpleWidth : sideBars[i][0];
-						blinkSimple(startLed, indicatorSimpleWidth);
+						fill_solid(&leds[startLed], indicatorSimpleWidth, CRGB::DarkOrange);
 					}
 				}
 			}
