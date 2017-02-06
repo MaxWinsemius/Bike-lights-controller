@@ -43,18 +43,32 @@ public:
 
 	void render()
 	{
-		//Main front light
-		uint8_t h = calcSine(timer100b8, 149, 74, 0), 
-				s = calcSine(timer1000b8, 200, 0, 0), 
-				v = calcSine(timer100b8, 255, 198, 0);
-		CHSV lightColor[2] = {CHSV(h, s, v), CHSV(0, 255, 217)};
-
-		//fill front and back light
-		for (int i = 0; i < 4; i += 2)
+		//fade from last round
+		for (int i = 0; i < 4; ++i)
 		{
-			uint8_t startLed = (!indToggle[0] && !indToggle[1] ? sideBars[i][0] : sideBars[i][1]);
-			uint8_t endLed = (!indToggle[0] && !indToggle[1] ? sideBars[i+1][1] : sideBars[i+1][0]) - startLed;
-			fill_solid(&leds[startLed], endLed, lightColor[i/2]);
+			fadeLeds(sideBars[i][0], sideBars[i][1], 240);
+		}
+
+		if(extensive) {
+			//Main front light
+			uint8_t h = calcSine(timer100b8, 149, 74, 0), 
+					s = calcSine(timer1000b8, 200, 0, 0), 
+					v = calcSine(timer100b8, 255, 198, 0);
+			CHSV lightColor[2] = {CHSV(h, s, v), CHSV(0, 255, 217)};
+
+			//fill front and back light
+			for (int i = 0; i < 4; i += 2)
+			{
+				uint8_t startLed = (!indToggle[0] && !indToggle[1] ? sideBars[i][0] : sideBars[i][1]);
+				uint8_t endLed = (!indToggle[0] && !indToggle[1] ? sideBars[i+1][1] : sideBars[i+1][0]) - startLed;
+				fill_solid(&leds[startLed], endLed, lightColor[i/2]);
+			}
+		} else { //Simple
+			//fill front light
+			fill_solid(&leds[30 - (indicatorSimpleWidth / 2)], indicatorSimpleWidth, CHSV(0, 0, 200));
+
+			//fill back light
+			fill_solid(&leds[(sideBars[3][1] - (sideBars[3][1] - 60) / 2) - (indicatorSimpleWidth / 2)], indicatorSimpleWidth, CHSV(0, 255, 217));
 		}
 
 		//indicators
@@ -63,8 +77,6 @@ public:
 			//roll lights
 			for (int i = 0; i < 4; ++i)
 			{
-				//fade leds
-				fadeLeds(sideBars[i][0], sideBars[i][1], 240);
 
 				//check which side to show
 				if(indToggle[indSideParse[i]]) {
