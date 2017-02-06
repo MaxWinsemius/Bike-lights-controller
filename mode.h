@@ -16,6 +16,20 @@ protected:
 			leds[i].nscale8(scale);
 		}
 	}
+	
+	bool blinkExtensive(uint8_t bar[2], uint8_t runner, bool direction)
+	{
+		//calculate current led position based on direction
+		uint8_t currentLed = direction ? bar[0] + runner : bar[1] - 1 - runner;
+
+		//set led color
+		leds[currentLed] = CRGB::DarkOrange;
+
+		//check if the led has exceeded the last led to blink (to prevent it trying to color too many leds)
+		return direction ? 
+			VarHandler::checkHigherThan(bar[0], runner, bar[1] - 1) : 
+			VarHandler::checkLowerThan(bar[1], runner, bar[0] + 2);
+	}
 
 public:
 	Mode(CRGB *l) { leds = l; }

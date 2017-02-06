@@ -43,13 +43,9 @@ public:
 
 	void render()
 	{
-		//fade from last round
-		for (int i = 0; i < 4; ++i)
-		{
-			fadeLeds(sideBars[i][0], sideBars[i][1], 240);
-		}
+		fadeLeds(0, NUM_LEDS, 240);
 
-		if(extensive) {
+		if(extensiveness == 1 || extensiveness == 2) {
 			//Main front light
 			uint8_t h = calcSine(timer100b8, 149, 74, 0), 
 					s = calcSine(timer1000b8, 200, 0, 0), 
