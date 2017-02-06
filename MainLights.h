@@ -68,7 +68,7 @@ public:
 
 				//check which side to show
 				if(indToggle[indSideParse[i]]) {
-					if(extensiveness == 1) {
+					if(extensiveness == 1 || extensiveness == 2) {
 						if(!indFinished[i]) { //check if the indicator has finished running
 							indFinished[i] = blinkExtensive(sideBars[i], indRunLight, indSideParseB[i]); //blink led
 						}
@@ -101,7 +101,7 @@ public:
 				indToggle[0] = !indToggle[0]; //Turn on toggle for left side.
 			} else {
 				//Switch cSetting
-				cSetting = (currentSetting + 1) % amntSettings; //warp around if exceeding amntSettings
+				cSetting = (cSetting + 1) % amntSettings; //warp around if exceeding amntSettings
 			}
 		}
 	}
