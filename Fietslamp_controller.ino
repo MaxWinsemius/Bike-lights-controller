@@ -51,6 +51,7 @@ void readButtons()
 			buttonCounter[i]++;
 			if (i == 2 && buttonCounter[i] == 1) {
 				cSetting = (cSetting + 1) % amtSettings; // wrap around if exceeding amtSettings
+				
 				Serial.print("switching cSetting to ");
 				Serial.print(cSetting);
 				Serial.print("; buttonCounter: ");

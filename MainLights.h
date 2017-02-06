@@ -1,7 +1,10 @@
 class MainLights: public Mode {
 private:
 	//setting vars
-	bool extensive = false;
+	uint8_t cSetting = 0; //Switch extensiveness, [more options here]
+	const uint8_t amntSettings = 1;
+	uint8_t extensiveness = 0; //Simple, extensive, knight rider
+	uint8_t amntExtensiveness = 3;
 
 	//indicator vars
 	const uint8_t indicatorPeriod = 8; //Periods n^2 work best (don't skip beats).
@@ -77,11 +80,11 @@ public:
 
 				//check which side to show
 				if(indToggle[indSideParse[i]]) {
-					if(extensive) {
+					if(extensiveness == 1 || extensiveness == 2) {
 						if(!indFinished[i]) { //check if the indicator has finished running
 							indFinished[i] = blinkExtensive(sideBars[i], indRunLight, indSideParseB[i]); //blink led
 						}
-					} else if(indSwitch) {
+					} else if(indSwitch && extensiveness == 0) {
 						//Simple
 						uint8_t startLed = i%2 == 0 ? sideBars[i][1] - indicatorSimpleWidth : sideBars[i][0];
 						blinkSimple(startLed, indicatorSimpleWidth);
@@ -96,33 +99,39 @@ public:
 			if(((timer100b8 / indicatorPeriod) % 2 == 1) == indSwitch) {
 				indRunLight = 0;
 				indSwitch = !indSwitch;
-				if(extensive) {
+				if(extensiveness == 1 || extensiveness == 2) {
 					indFinished[0] = indFinished[1] = indFinished[2] = indFinished[3] = false;
 				}
 			}
-
 		}
 	}
 
 	void left(uint8_t c, uint8_t s)
 	{
-		if(s == 0) {
-			if(c == 1) {
+		if(c == 1) {
+			if(s == 0) {
 				indToggle[0] = !indToggle[0]; //Turn on toggle for left side.
+			} else {
+				//Switch cSetting
+				cSetting = (cSetting + 1) % amntSettings; //warp around if exceeding amntSettings
 			}
-		} else {
-
 		}
 	}
 
 	void right(uint8_t c, uint8_t s)
 	{
-		if(s == 0) {
-			if(c == 1) {
+		if(c == 1) {
+			if(s == 0) {
 				indToggle[1] = !indToggle[1]; //Turn on toggle for right side.
+			} else {
+				switch(cSetting) {
+					case 0:
+						extensiveness = (extensiveness + 1) % amntExtensiveness; //wrap around;
+						break;
+					default:
+						break;
+				}
 			}
-		} else {
-
 		}
 	}
 
