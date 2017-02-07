@@ -5,17 +5,21 @@ private:
 	const uint8_t amntSettings = 1;
 	uint8_t extensiveness = 2; //Simple, extensive, knight rider
 	uint8_t amntExtensiveness = 3;
+	uint8_t knightRiderSpeed = 2;
+
+	//knight rider vars
+	uint8_t lastLed[2] = {sideBars[0][0], sideBars[2][0]};
 
 	//indicator vars
 	const uint8_t indicatorPeriod = 8; //Periods n^2 work best (don't skip beats).
 	const uint8_t indicatorSimpleWidth = 8;
 	bool indToggle[2] = {false, false}; //indicator toggle; left, right
+	bool indOn = false;
 	bool indFinished[4] = {true};
 	uint8_t indRunLight = 0; //indicator running light index
 	bool indSwitch = false; //Timer to see when to restart
 
 	int indSideParse[4] = {0, 1, 1, 0};
-	bool indSideParseB[4] = {false, true, true, false};
 
 	uint8_t calcPartitionalPoint(uint8_t t1, uint8_t t2, uint8_t p) {
 		uint16_t total1 = (uint16_t)t1;
@@ -34,7 +38,7 @@ public:
 		static const uint8_t quickFade = 240, slowFade = 250;
 		if(extensiveness != 2) { 
 			fadeLeds(0, NUM_LEDS, quickFade);
-		} else if(!indToggle[0] && !indToggle[1]) {
+		} else if(!indOn) {
 			fadeLeds(0, NUM_LEDS, slowFade);
 		} else {
 			fadeLeds(0, sideBars[0][1], quickFade);
@@ -56,48 +60,25 @@ public:
 				//extensive
 				for (int i = 0; i < 4; i += 2)
 				{
-					uint8_t startLed = (!indToggle[0] && !indToggle[1] ? sideBars[i][0] : sideBars[i][1]);
-					uint8_t endLed = (!indToggle[0] && !indToggle[1] ? sideBars[i+1][1] : sideBars[i+1][0]) - startLed;
+					uint8_t startLed = sideBars[i][indOn];
+					uint8_t endLed = sideBars[i+1][!indOn]- startLed;
 					fill_solid(&leds[startLed], endLed, lightColor[i/2]);
 				}
 			} else {
 				//knight rider
-
-				// uint8_t runner = (uint8_t)(((int16_t)triwave8(timer20b8) * (int16_t)NUM_LEDS) / 255);
-				// leds[runner] = lightColor[0];
 				static uint8_t counter = 0;
+				// uint8_t frontRunner = calcTri((uint16_t)counter, (uint16_t)(sideBars[1][!indOn]), (uint16_t)sideBars[0][indOn], 0);
+				// uint8_t backRunner = calcTri((uint16_t)counter, (uint16_t)(sideBars[3][!indOn]), (uint16_t)sideBars[2][indOn], 0);
 
-				uint8_t index = (indToggle[0] || indToggle[1]) ? 1 : 0;
-
-				int16_t frontWidth = (int16_t)(sideBars[1][1 - index] - sideBars[0][index]);
-				uint8_t frontRunner = sideBars[0][index] + (uint8_t)(((int16_t)triwave8(counter) * frontWidth) / 255);
-				int16_t backWidth = (int16_t)(sideBars[3][1 - index] - sideBars[2][index]);
-				uint8_t backRunner = sideBars[2][index] + (uint8_t)(((int16_t)triwave8(counter) * backWidth) / 255);
-
-				leds[frontRunner] = lightColor[0];
-				leds[backRunner] = lightColor[1];
-
-				counter++;
-				// uint8_t width[2];
-				// if(indToggle[0] || indToggle[1]) {
-				// 	width[0] = sideBars[1][0] - sideBars[0][1];
-				// 	width[1] = sideBars[3][0] - sideBars[2][1];
-				// } else {
-				// 	width[0] = sideBars[1][1] - sideBars[0][0];
-				// 	width[1] = sideBars[3][1] - sideBars[2][0];
-				// }
-				// uint8_t frontRunner = (uint8_t)((int16_t)triwave8(timer20b8) * (int16_t)width[0] / 255);
-				// uint8_t backRunner = (uint8_t)((int16_t)triwave8(timer20b8) * (int16_t)width[1] / 255);
-				// blinkExtensive()
-				// uint8_t frontRunner = sideBars[0][1] + 1 + (calcPartitionalPoint(width[0], triwave8(timer20b8), 255));
-				// uint8_t backRunner = sideBars[2][1] + 1 + (calcPartitionalPoint(width[1], triwave8(timer20b8), 255));
 				// leds[frontRunner] = lightColor[0];
 				// leds[backRunner] = lightColor[1];
 
-				// for(uint8_t i = 0; i < 2; i++) {
-				// 	uint8_t runner = sideBars[i*2][indToggle[0] || indToggle[1] ? 1 : 0] + 1 + (calcPartitionalPoint(width[i], triwave8(timer20b8), 255));
-				// 	leds[runner] = lightColor[i];
-				// }
+				for(uint8_t i; i < 2; i++) {
+					uint8_t runner = calcTri((uint16_t)counter, (uint16_t)(sideBars[i * 2 + 1][!indOn]), (uint16_t)sideBars[i * 2][indOn], 0);
+					leds[runner] = lightColor[i];
+				}
+
+				counter += knightRiderSpeed;
 			}
 		} else { //Simple
 			//fill front light
@@ -108,17 +89,15 @@ public:
 		}
 
 		//indicators
-		if(indToggle[0] || indToggle[1]) {
-
+		if(indOn) {
 			//roll lights
 			for (int i = 0; i < 4; ++i)
 			{
-
 				//check which side to show
 				if(indToggle[indSideParse[i]]) {
 					if(extensiveness == 1 || extensiveness == 2) {
 						if(!indFinished[i]) { //check if the indicator has finished running
-							indFinished[i] = blinkExtensive(sideBars[i], indRunLight, indSideParseB[i], CRGB::DarkOrange); //blink led
+							indFinished[i] = blinkExtensive(sideBars[i], indRunLight, indSideParse[i], CRGB::DarkOrange); //blink led
 						}
 					} else if(indSwitch && extensiveness == 0) {
 						//Simple
@@ -147,6 +126,7 @@ public:
 		if(c == 1) {
 			if(s == 0) {
 				indToggle[0] = !indToggle[0]; //Turn on toggle for left side.
+				indOn = indToggle[0] || indToggle[1];
 			} else {
 				//Switch cSetting
 				cSetting = (cSetting + 1) % amntSettings; //warp around if exceeding amntSettings
@@ -159,10 +139,13 @@ public:
 		if(c == 1) {
 			if(s == 0) {
 				indToggle[1] = !indToggle[1]; //Turn on toggle for right side.
+				indOn = indToggle[0] || indToggle[1];
 			} else {
 				switch(cSetting) {
 					case 0:
 						extensiveness = (extensiveness + 1) % amntExtensiveness; //wrap around;
+
+						// lastLed[0] = indOn ? 
 						break;
 					default:
 						break;
