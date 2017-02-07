@@ -3,7 +3,7 @@ private:
 	//setting vars
 	uint8_t cSetting = 0; //Switch extensiveness, [more options here]
 	const uint8_t amntSettings = 1;
-	uint8_t extensiveness = 0; //Simple, extensive, knight rider
+	uint8_t extensiveness = 2; //Simple, extensive, knight rider
 	uint8_t amntExtensiveness = 3;
 
 	//indicator vars
@@ -17,13 +17,32 @@ private:
 	int indSideParse[4] = {0, 1, 1, 0};
 	bool indSideParseB[4] = {false, true, true, false};
 
+	uint8_t calcPartitionalPoint(uint8_t t1, uint8_t t2, uint8_t p) {
+		uint16_t total1 = (uint16_t)t1;
+		uint16_t total2 = (uint16_t)t2;
+		uint16_t point = (uint16_t)p;
+
+		return (uint8_t)(t1 * p / t2);
+	}
+
 public:
 	//construct
 	MainLights (CRGB *l) : Mode(l) {}
 
 	void render()
 	{
-		fadeLeds(0, NUM_LEDS, 240);
+		static const uint8_t quickFade = 240, slowFade = 250;
+		if(extensiveness != 2) { 
+			fadeLeds(0, NUM_LEDS, quickFade);
+		} else if(!indToggle[0] && !indToggle[1]) {
+			fadeLeds(0, NUM_LEDS, slowFade);
+		} else {
+			fadeLeds(0, sideBars[0][1], quickFade);
+			fadeLeds(sideBars[0][1] + 1, sideBars[1][0] - 1, slowFade);
+			fadeLeds(sideBars[1][0], sideBars[2][1], quickFade);
+			fadeLeds(sideBars[2][1] + 1, sideBars[3][0] - 1, slowFade);
+			fadeLeds(sideBars[3][0], sideBars[3][1], quickFade);
+		}
 
 		if(extensiveness == 1 || extensiveness == 2) {
 			//Main front light
@@ -33,11 +52,31 @@ public:
 			CHSV lightColor[2] = {CHSV(h, s, v), CHSV(0, 255, 217)};
 
 			//fill front and back light
-			for (int i = 0; i < 4; i += 2)
-			{
-				uint8_t startLed = (!indToggle[0] && !indToggle[1] ? sideBars[i][0] : sideBars[i][1]);
-				uint8_t endLed = (!indToggle[0] && !indToggle[1] ? sideBars[i+1][1] : sideBars[i+1][0]) - startLed;
-				fill_solid(&leds[startLed], endLed, lightColor[i/2]);
+			if(extensiveness == 1) {
+				for (int i = 0; i < 4; i += 2)
+				{
+					uint8_t startLed = (!indToggle[0] && !indToggle[1] ? sideBars[i][0] : sideBars[i][1]);
+					uint8_t endLed = (!indToggle[0] && !indToggle[1] ? sideBars[i+1][1] : sideBars[i+1][0]) - startLed;
+					fill_solid(&leds[startLed], endLed, lightColor[i/2]);
+				}
+			} else {
+				uint8_t width[2];
+				if(indToggle[0] || indToggle[1]) {
+					width[0] = sideBars[1][0] - sideBars[0][1];
+					width[1] = sideBars[3][0] - sideBars[2][1];
+				} else {
+					width[0] = sideBars[1][1] - sideBars[0][0];
+					width[1] = sideBars[3][1] - sideBars[2][0];
+				}
+				uint8_t frontRunner = sideBars[0][1] + 1 + (calcPartitionalPoint(width[0], triwave8(timer20b8), 255));
+				uint8_t backRunner = sideBars[2][1] + 1 + (calcPartitionalPoint(width[1], triwave8(timer20b8), 255));
+				leds[frontRunner] = lightColor[0];
+				leds[backRunner] = lightColor[1];
+
+				// for(uint8_t i = 0; i < 2; i++) {
+				// 	uint8_t runner = sideBars[i*2][indToggle[0] || indToggle[1] ? 1 : 0] + 1 + (calcPartitionalPoint(width[i], triwave8(timer20b8), 255));
+				// 	leds[runner] = lightColor[i];
+				// }
 			}
 		} else { //Simple
 			//fill front light
@@ -58,7 +97,7 @@ public:
 				if(indToggle[indSideParse[i]]) {
 					if(extensiveness == 1 || extensiveness == 2) {
 						if(!indFinished[i]) { //check if the indicator has finished running
-							indFinished[i] = blinkExtensive(sideBars[i], indRunLight, indSideParseB[i]); //blink led
+							indFinished[i] = blinkExtensive(sideBars[i], indRunLight, indSideParseB[i], CRGB::DarkOrange); //blink led
 						}
 					} else if(indSwitch && extensiveness == 0) {
 						//Simple

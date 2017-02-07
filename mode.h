@@ -1,7 +1,7 @@
 class Mode {
 protected:
 	CRGB *leds;
-	uint8_t sideBars[4][2] = {{0, 19}, {40, 60}, {60, 77}, {95, 112}}; //front left, front right, back left, back right
+	const uint8_t sideBars[4][2] = {{0, 19}, {40, 60}, {60, 77}, {95, NUM_LEDS}}; //front left, front right, back left, back right
 
 	uint8_t calcSine(uint16_t counter, uint16_t top, uint16_t bottom, uint16_t sineOffset)
 	{
@@ -16,14 +16,14 @@ protected:
 			leds[i].nscale8(scale);
 		}
 	}
-	
-	bool blinkExtensive(uint8_t bar[2], uint8_t runner, bool direction)
+
+	bool blinkExtensive(uint8_t bar[2], uint8_t runner, bool direction, CRGB clr)
 	{
 		//calculate current led position based on direction
 		uint8_t currentLed = direction ? bar[0] + runner : bar[1] - 1 - runner;
 
 		//set led color
-		leds[currentLed] = CRGB::DarkOrange;
+		leds[currentLed] = clr;
 
 		//check if the led has exceeded the last led to blink (to prevent it trying to color too many leds)
 		return direction ? 

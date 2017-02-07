@@ -4,7 +4,7 @@
 // #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
 #define DATA_PIN						5
-#define NUM_LEDS						120
+#define NUM_LEDS						112
 static const int LEFT_BUTTON_PIN = 		2;
 static const int  RIGHT_BUTTON_PIN =	4;
 static const int  SETTING_BUTTON_PIN =	3;
