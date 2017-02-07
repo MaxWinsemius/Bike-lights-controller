@@ -3,12 +3,13 @@ private:
 	//setting vars
 	uint8_t cSetting = 0; //Switch extensiveness, [more options here]
 	const uint8_t amntSettings = 1;
-	uint8_t extensiveness = 2; //Simple, extensive, knight rider
+	uint8_t extensiveness = 0; //Simple, extensive, knight rider
 	uint8_t amntExtensiveness = 3;
-	uint8_t knightRiderSpeed = 2;
+	uint8_t knightRiderSpeed = 1;
 
 	//knight rider vars
 	uint8_t lastLed[2] = {sideBars[0][0], sideBars[2][0]};
+	uint8_t counter = 0;
 
 	//indicator vars
 	const uint8_t indicatorPeriod = 8; //Periods n^2 work best (don't skip beats).
@@ -50,17 +51,17 @@ public:
 
 	void render()
 	{
-		static const uint8_t quickFade = 240, slowFade = 250;
+		static const uint8_t defaultFade = 240, knightFade = 250;
 		if(extensiveness != 2) { 
-			fadeLeds(0, NUM_LEDS, quickFade);
+			fadeLeds(0, NUM_LEDS, defaultFade);
 		} else if(!indOn) {
-			fadeLeds(0, NUM_LEDS, slowFade);
+			fadeLeds(0, NUM_LEDS, knightFade);
 		} else {
-			fadeLeds(0, sideBars[0][1], quickFade);
-			fadeLeds(sideBars[0][1], sideBars[1][0], slowFade);
-			fadeLeds(sideBars[1][0], sideBars[2][1], quickFade);
-			fadeLeds(sideBars[2][1], sideBars[3][0], slowFade);
-			fadeLeds(sideBars[3][0], sideBars[3][1], quickFade);
+			fadeLeds(0, sideBars[0][1], defaultFade);
+			fadeLeds(sideBars[0][1], sideBars[1][0], knightFade);
+			fadeLeds(sideBars[1][0], sideBars[2][1], defaultFade);
+			fadeLeds(sideBars[2][1], sideBars[3][0], knightFade);
+			fadeLeds(sideBars[3][0], sideBars[3][1], defaultFade);
 		}
 
 		if(extensiveness == 1 || extensiveness == 2) {
@@ -79,18 +80,17 @@ public:
 					uint8_t endLed = sideBars[i+1][!indOn]- startLed;
 					fill_solid(&leds[startLed], endLed, lightColor[i/2]);
 				}
-			} else {
-				//knight rider
-				static uint8_t counter = 0;
-				// uint8_t frontRunner = calcTri((uint16_t)counter, (uint16_t)(sideBars[1][!indOn]), (uint16_t)sideBars[0][indOn], 0);
-				// uint8_t backRunner = calcTri((uint16_t)counter, (uint16_t)(sideBars[3][!indOn]), (uint16_t)sideBars[2][indOn], 0);
-
-				// leds[frontRunner] = lightColor[0];
-				// leds[backRunner] = lightColor[1];
-
+			} else { //knight rider
 				for(uint8_t i; i < 2; i++) {
 					uint8_t runner = calcTri((uint16_t)counter, (uint16_t)(sideBars[i * 2 + 1][!indOn]), (uint16_t)sideBars[i * 2][indOn], 0);
-					leds[runner] = lightColor[i];
+
+					if(runner > lastLed[i]) {
+						fill_solid(&leds[lastLed[i] + sideBars[i * 2][indOn]], runner - lastLed[i] + 1, lightColor[i]);
+					} else {
+						fill_solid(&leds[runner + sideBars[i * 2][indOn]], lastLed[i] - runner + 1, lightColor[i]);
+					}
+
+					lastLed[i] = runner;
 				}
 
 				counter += knightRiderSpeed;
@@ -160,7 +160,15 @@ public:
 					case 0:
 						extensiveness = (extensiveness + 1) % amntExtensiveness; //wrap around;
 
-						// lastLed[0] = indOn ? 
+						if(extensiveness == 2) {
+							counter = 0;
+							for(uint8_t i = 0; i < 2; i++) {
+								lastLed[i] = calcTri((uint16_t)counter, (uint16_t)(sideBars[i * 2 + 1][!indOn]), (uint16_t)sideBars[i * 2][indOn], 0); 
+							}
+						}
+						break;
+					case 1:
+					
 						break;
 					default:
 						break;

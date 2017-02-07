@@ -9,10 +9,15 @@ protected:
 		return (uint8_t)(((uint16_t)(sin8(counter+offset))*map)/255)+bottom;
 	}
 
+	uint8_t calcTriOffset(uint16_t counter, uint16_t top, uint16_t bottom, uint16_t offset)
+	{
+		return calcTri(counter, top, bottom, offset) + (uint8_t)bottom;
+	}
+
 	uint8_t calcTri(uint16_t counter, uint16_t top, uint16_t bottom, uint16_t offset)
 	{
 		uint16_t map = top - bottom;
-		return (uint8_t)(((uint16_t)(triwave8(counter+offset))*map)/255)+bottom;
+		return (uint8_t)(((uint16_t)(triwave8(counter+offset))*map)/255);
 	}
 
 	void fadeLeds(uint8_t start, uint8_t end, uint8_t scale)

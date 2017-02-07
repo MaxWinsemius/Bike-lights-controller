@@ -25,16 +25,18 @@ uint8_t timer1000b8 = 	random8();
 #include "MainLights.h"
 #include "RainbowWithGlitter.h"
 #include "SolidRainbow.h"
+#include "Menu.h"
 
-int amtModes = 5;
-Mode *modes[5] {
-	new SolidRainbow(leds), 
-	new RainbowWithGlitter(leds), 
-	new Bpm(leds),
+uint8_t amtModes = 5;
+Mode *modes[6] {
+	new MainLights(leds),
+	new SolidRainbow(leds),
+	new RainbowWithGlitter(leds),
 	new Confetti(leds),
-	new MainLights(leds)
+	new Bpm(leds),
+	new Mode(leds)
 	};
-uint8_t cMode = 4;
+uint8_t cMode = 0;
 
 /*############################## Setting functions ##############################*/
 void readButtons()
@@ -65,8 +67,7 @@ void readButtons()
 						break;
 					case 2: //switch mode
 						if(buttonCounter[i] == 1) {
-							//loop around after last mode
-							cMode = (i == 0 ? (cMode - 1) : (cMode + 1)) % amtModes;
+							cMode = VarHandler::cap(cMode, i == 0 ? -1 : 1, amtModes - 1);
 							modes[cMode]->start();
 						}
 						break;
