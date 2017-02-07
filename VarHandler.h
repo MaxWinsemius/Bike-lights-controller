@@ -5,11 +5,16 @@ public:
 	//cap the input + add between 0 and 255
 	static uint8_t capUint8(uint8_t i, int16_t a)
 	{
+		return cap(i, a, 255);
+	}
+
+	static uint8_t cap(uint8_t i, int16_t a, uint8_t max)
+	{
 		int16_t aa = abs(a);
 		uint8_t diffBot = i;
-		uint8_t diffTop = 255 - i;
+		uint8_t diffTop = max - i;
 		if(a >= 0) {
-			if(aa > diffTop) return 255; //check if i+a > 255
+			if(aa > diffTop) return max; //check if i+a > 255
 		} else {
 			if(aa > diffBot) return 0; //check if i-a < 0
 		}
