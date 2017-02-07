@@ -15,6 +15,7 @@ private:
 	const uint8_t indicatorSimpleWidth = 8;
 	bool indToggle[2] = {false, false}; //indicator toggle; left, right
 	bool indOn = false;
+	bool indLastState = indOn;
 	bool indFinished[4] = {true};
 	uint8_t indRunLight = 0; //indicator running light index
 	bool indSwitch = false; //Timer to see when to restart
@@ -27,6 +28,20 @@ private:
 		uint16_t point = (uint16_t)p;
 
 		return (uint8_t)(t1 * p / t2);
+	}
+
+	void switchIndicators()
+	{
+		indOn = indToggle[0] || indToggle[1];
+
+		if (indOn != indLastState) { //only run if switched
+			if(indOn) {
+				knightRiderSpeed = knightRiderSpeed * 2;
+			} else {
+				knightRiderSpeed = knightRiderSpeed / 2;
+			}
+		}
+		indLastState = indOn;
 	}
 
 public:
@@ -126,7 +141,7 @@ public:
 		if(c == 1) {
 			if(s == 0) {
 				indToggle[0] = !indToggle[0]; //Turn on toggle for left side.
-				indOn = indToggle[0] || indToggle[1];
+				switchIndicators();
 			} else {
 				//Switch cSetting
 				cSetting = (cSetting + 1) % amntSettings; //warp around if exceeding amntSettings
@@ -139,7 +154,7 @@ public:
 		if(c == 1) {
 			if(s == 0) {
 				indToggle[1] = !indToggle[1]; //Turn on toggle for right side.
-				indOn = indToggle[0] || indToggle[1];
+				switchIndicators();
 			} else {
 				switch(cSetting) {
 					case 0:
