@@ -38,9 +38,9 @@ public:
 			fadeLeds(0, NUM_LEDS, slowFade);
 		} else {
 			fadeLeds(0, sideBars[0][1], quickFade);
-			fadeLeds(sideBars[0][1] + 1, sideBars[1][0] - 1, slowFade);
+			fadeLeds(sideBars[0][1], sideBars[1][0], slowFade);
 			fadeLeds(sideBars[1][0], sideBars[2][1], quickFade);
-			fadeLeds(sideBars[2][1] + 1, sideBars[3][0] - 1, slowFade);
+			fadeLeds(sideBars[2][1], sideBars[3][0], slowFade);
 			fadeLeds(sideBars[3][0], sideBars[3][1], quickFade);
 		}
 
@@ -53,6 +53,7 @@ public:
 
 			//fill front and back light
 			if(extensiveness == 1) {
+				//extensive
 				for (int i = 0; i < 4; i += 2)
 				{
 					uint8_t startLed = (!indToggle[0] && !indToggle[1] ? sideBars[i][0] : sideBars[i][1]);
@@ -60,18 +61,38 @@ public:
 					fill_solid(&leds[startLed], endLed, lightColor[i/2]);
 				}
 			} else {
-				uint8_t width[2];
-				if(indToggle[0] || indToggle[1]) {
-					width[0] = sideBars[1][0] - sideBars[0][1];
-					width[1] = sideBars[3][0] - sideBars[2][1];
-				} else {
-					width[0] = sideBars[1][1] - sideBars[0][0];
-					width[1] = sideBars[3][1] - sideBars[2][0];
-				}
-				uint8_t frontRunner = sideBars[0][1] + 1 + (calcPartitionalPoint(width[0], triwave8(timer20b8), 255));
-				uint8_t backRunner = sideBars[2][1] + 1 + (calcPartitionalPoint(width[1], triwave8(timer20b8), 255));
+				//knight rider
+
+				// uint8_t runner = (uint8_t)(((int16_t)triwave8(timer20b8) * (int16_t)NUM_LEDS) / 255);
+				// leds[runner] = lightColor[0];
+				static uint8_t counter = 0;
+
+				uint8_t index = (indToggle[0] || indToggle[1]) ? 1 : 0;
+
+				int16_t frontWidth = (int16_t)(sideBars[1][1 - index] - sideBars[0][index]);
+				uint8_t frontRunner = sideBars[0][index] + (uint8_t)(((int16_t)triwave8(counter) * frontWidth) / 255);
+				int16_t backWidth = (int16_t)(sideBars[3][1 - index] - sideBars[2][index]);
+				uint8_t backRunner = sideBars[2][index] + (uint8_t)(((int16_t)triwave8(counter) * backWidth) / 255);
+
 				leds[frontRunner] = lightColor[0];
 				leds[backRunner] = lightColor[1];
+
+				counter++;
+				// uint8_t width[2];
+				// if(indToggle[0] || indToggle[1]) {
+				// 	width[0] = sideBars[1][0] - sideBars[0][1];
+				// 	width[1] = sideBars[3][0] - sideBars[2][1];
+				// } else {
+				// 	width[0] = sideBars[1][1] - sideBars[0][0];
+				// 	width[1] = sideBars[3][1] - sideBars[2][0];
+				// }
+				// uint8_t frontRunner = (uint8_t)((int16_t)triwave8(timer20b8) * (int16_t)width[0] / 255);
+				// uint8_t backRunner = (uint8_t)((int16_t)triwave8(timer20b8) * (int16_t)width[1] / 255);
+				// blinkExtensive()
+				// uint8_t frontRunner = sideBars[0][1] + 1 + (calcPartitionalPoint(width[0], triwave8(timer20b8), 255));
+				// uint8_t backRunner = sideBars[2][1] + 1 + (calcPartitionalPoint(width[1], triwave8(timer20b8), 255));
+				// leds[frontRunner] = lightColor[0];
+				// leds[backRunner] = lightColor[1];
 
 				// for(uint8_t i = 0; i < 2; i++) {
 				// 	uint8_t runner = sideBars[i*2][indToggle[0] || indToggle[1] ? 1 : 0] + 1 + (calcPartitionalPoint(width[i], triwave8(timer20b8), 255));

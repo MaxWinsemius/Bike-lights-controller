@@ -17,16 +17,16 @@ protected:
 		}
 	}
 
-	bool blinkExtensive(uint8_t bar[2], uint8_t runner, bool direction, CRGB clr)
+	bool blinkExtensive(uint8_t bar[2], uint8_t runner, bool changeDirection, CRGB clr)
 	{
-		//calculate current led position based on direction
-		uint8_t currentLed = direction ? bar[0] + runner : bar[1] - 1 - runner;
+		//calculate current led position based on changeDirection
+		uint8_t currentLed = changeDirection ? bar[0] + runner : bar[1] - 1 - runner;
 
 		//set led color
 		leds[currentLed] = clr;
 
 		//check if the led has exceeded the last led to blink (to prevent it trying to color too many leds)
-		return direction ? 
+		return changeDirection ? 
 			VarHandler::checkHigherThan(bar[0], runner, bar[1] - 1) : 
 			VarHandler::checkLowerThan(bar[1], runner, bar[0] + 2);
 	}
