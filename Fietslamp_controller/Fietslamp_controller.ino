@@ -105,6 +105,8 @@ void setup()
 void loop() 
 {
 	modes[cMode]->render();
+	
+	
 
 	FastLED.show();
 	FastLED.delay(1000/FPS);

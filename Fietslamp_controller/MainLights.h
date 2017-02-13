@@ -1,8 +1,10 @@
 class MainLights: public Mode {
+protected:
+	// cSetting = 0; //Switch extensiveness, [more options here]
+	amntSettings = 1;
+	
 private:
 	//setting vars
-	uint8_t cSetting = 0; //Switch extensiveness, [more options here]
-	const uint8_t amntSettings = 1;
 	uint8_t extensiveness = 0; //Simple, extensive, knight rider
 	uint8_t amntExtensiveness = 3;
 	uint8_t knightRiderSpeed = 1;
