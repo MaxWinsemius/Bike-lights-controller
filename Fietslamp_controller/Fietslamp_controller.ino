@@ -38,6 +38,11 @@ Mode *modes[6] {
 	};
 uint8_t cMode = 0;
 
+//Menu declaration
+Menu menu = Menu(leds);
+
+uint8_t cSetting = 0; // 0 = mode functions, 1 = mode settings, 2 = switch mode, 3 = brightness
+
 /*############################## Setting functions ##############################*/
 void readButtons()
 {
@@ -45,7 +50,6 @@ void readButtons()
 	static uint8_t buttonCounter[3] = {0, 0, 0};
 
 	static uint8_t amtSettings = 4;
-	static uint8_t cSetting = 0; // 0 = mode functions, 1 = mode settings, 2 = switch mode, 3 = brightness
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -67,7 +71,7 @@ void readButtons()
 						break;
 					case 2: //switch mode
 						if(buttonCounter[i] == 1) {
-							cMode = VarHandler::cap(cMode, i == 0 ? -1 : 1, amtModes - 1);
+							cMode = VarHandler::cap(cMode, i == 0 ? -1 : 1, amntModes - 1);
 							modes[cMode]->start();
 						}
 						break;
@@ -106,7 +110,7 @@ void loop()
 {
 	modes[cMode]->render();
 	
-	
+	menu.render(cSetting, modes[cMode]->getCurrentSetting());
 
 	FastLED.show();
 	FastLED.delay(1000/FPS);

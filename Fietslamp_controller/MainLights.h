@@ -11,7 +11,7 @@ private:
 	uint8_t counter = 0;
 
 	//indicator vars
-	const uint8_t indicatorPeriod = 8; //Periods n^2 work best (don't skip beats).
+	const uint8_t indicatorPeriod = 8; //Periods n^2 work best (they don't skip beats).
 	const uint8_t indicatorSimpleWidth = 8;
 	bool indToggle[2] = {false, false}; //indicator toggle; left, right
 	bool indOn = false;
