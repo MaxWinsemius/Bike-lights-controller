@@ -4,7 +4,7 @@ protected:
 	const uint8_t sideBars[4][2] = {{0, 19}, {40, 60}, {60, 77}, {95, NUM_LEDS}}; //front left, front right, back left, back right
 	
 	uint8_t cSetting = 0; //Init vars that will be used by some modes
-	const uint8_t amntSettings = 0;
+	uint8_t amntSettings = 0;
 
 	uint8_t calcSine(uint16_t counter, uint16_t top, uint16_t bottom, uint16_t offset)
 	{
@@ -53,5 +53,5 @@ public:
 	virtual void left(uint8_t c, uint8_t s) {}; //run this when the left/right button is being pushed
 	virtual void right(uint8_t c, uint8_t s) {};
 
-
+	uint8_t getCurrentSetting() { return cSetting; }
 };

@@ -1,9 +1,6 @@
 class MainLights: public Mode {
-protected:
-	// cSetting = 0; //Switch extensiveness, [more options here]
-	amntSettings = 1;
-	
 private:
+
 	//setting vars
 	uint8_t extensiveness = 0; //Simple, extensive, knight rider
 	uint8_t amntExtensiveness = 3;
@@ -49,7 +46,9 @@ private:
 
 public:
 	//construct
-	MainLights (CRGB *l) : Mode(l) {}
+	MainLights (CRGB *l) : Mode(l) {
+		amntSettings = 1;
+	}
 
 	void render()
 	{

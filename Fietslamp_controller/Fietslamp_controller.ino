@@ -27,7 +27,7 @@ uint8_t timer1000b8 = 	random8();
 #include "SolidRainbow.h"
 #include "Menu.h"
 
-uint8_t amtModes = 5;
+uint8_t amntModes = 5;
 Mode *modes[6] {
 	new MainLights(leds),
 	new SolidRainbow(leds),
