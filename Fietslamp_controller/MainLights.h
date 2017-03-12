@@ -52,6 +52,7 @@ public:
 
 	void render()
 	{
+		Serial.println(cSetting);
 		static const uint8_t defaultFade = 240, knightFade = 250;
 		if(extensiveness != 2) { 
 			fadeLeds(0, NUM_LEDS, defaultFade);
@@ -167,9 +168,6 @@ public:
 								lastLed[i] = calcTri((uint16_t)counter, (uint16_t)(sideBars[i * 2 + 1][!indOn]), (uint16_t)sideBars[i * 2][indOn], 0); 
 							}
 						}
-						break;
-					case 1:
-					
 						break;
 					default:
 						break;

@@ -1,0 +1,32 @@
+Mode btn:
+=(0) 
+==Mainlights
+===left btn: 	Blinker
+===right btn: 	Blinker
+==SolidRainbow
+==RainbowWithGlitter
+==Confetti
+==Bpm
+
+
+=(1)
+==Mainlights
+===left btn:	Increase setting
+===right btn:
+====Setting:
+====(0):	Increase extensiveness
+
+==SolidRainbow
+==RainbowWithGlitter
+==Confetti
+==Bpm
+
+
+=(2)
+==left btn:	Decrease mode
+==right btn:	Increase mode
+
+
+=(3)
+==left btn:	Decrease brightness
+==right btn: 	Increase brightness
